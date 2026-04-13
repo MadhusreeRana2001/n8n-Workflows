@@ -1,0 +1,215 @@
+{
+  "name": "n8n Form Trigger",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Submit URLs",
+        "formDescription": "Submit company URLs",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "URLs"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6373527b-2df1-43f0-a2d4-e70e35b32bf1",
+      "name": "On form submission",
+      "webhookId": "e8402cbf-61e0-4585-a1f8-be47696b3c46"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5ae5bc15-c4a6-4879-8bb4-1dc490a14ead",
+              "name": "URL_list",
+              "value": "={{ $json.URLs.replaceAll(' ', '').split(',') }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "3abc2c7b-ca65-4a80-9b77-02491805e52d",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "URL_list",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "fd310901-d62b-4a9d-9c04-05a1fb29b5cd",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "# Loop over input items and add a new field called 'my_new_field' to the JSON of each one\nfor item in _items:\n  company_name = item[\"json\"][\"URL_list\"].split(\".\")[0]\n  item[\"json\"][\"company_name\"] = company_name[0].upper() + company_name[1:]\n  item[\"json\"][\"URL_list\"] = f\"https://{item[\"json\"][\"URL_list\"]}\"\n\nreturn _items"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "2d616bc2-e5b4-41cd-948f-866ce456ba58",
+      "name": "Code in Python"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1PZ0Fn8T-M9EaD0T_gzf4tgjppF_Pqv7YXJloqcj8nLk",
+          "mode": "list",
+          "cachedResultName": "n8n Practice 3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PZ0Fn8T-M9EaD0T_gzf4tgjppF_Pqv7YXJloqcj8nLk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PZ0Fn8T-M9EaD0T_gzf4tgjppF_Pqv7YXJloqcj8nLk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Company Name": "={{ $json.company_name }}",
+            "Company URL": "={{ $json.URL_list }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company URL",
+              "displayName": "Company URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        832,
+        0
+      ],
+      "id": "81ba16f1-ad12-46d8-bdc4-766021536392",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "8IwGVFxKT3BrStaF",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "On form submission": [
+      {
+        "json": {
+          "URLs": "keysight.com, aivot.ai, pitangent.net",
+          "submittedAt": "2026-01-25T23:49:28.759+05:30",
+          "formMode": "test"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Code in Python",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in Python": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "6ff28a46-5a6f-4ee7-b9bd-eb65e3546dda",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3d8b2cc6eda87ab7a55083550bc9a85efa5798fe4bcb79e64ab9897895fd9405"
+  },
+  "id": "qp-jXKkwhkSo4xHEovMtf",
+  "tags": []
+}

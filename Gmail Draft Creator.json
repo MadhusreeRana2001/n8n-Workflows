@@ -1,0 +1,209 @@
+{
+  "name": "Gmail Draft Creator",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "0cf1d7d9-bcaf-4a67-a673-02532af018d3",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "yPYrb4l9A7M50AMm",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create a draft for this mail.\n\n<email>\nFrom:\n{{ $json.from.text }}\n\nSubject:\n{{ $json.subject }}\n\nBody:\n{{ $json.text }}\n</email> ",
+        "options": {
+          "systemMessage": "|| ROLE ||\nYou are an expert at replying to emails.\n\n|| GOAL ||\nYour job is to write a reply to the given email, then add it as a draft to the email thread.\n\n|| RULE ||\n1. Output only the email body. Do not output the subject line.\n2. Tune to the tone of the email - formal or informal."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "107dceb2-252c-4311-a90f-e064bde6fa07",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        208,
+        192
+      ],
+      "id": "03a07a5e-0d74-4e5f-a4c7-1bffc827b168",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "5U80j1rcNl78brO3",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $('Gmail Trigger').item.json.headers.subject }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "threadId": "={{ $('Gmail Trigger').item.json.threadId }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        352,
+        208
+      ],
+      "id": "59d0ae05-2d0b-4eee-b613-e382133c7a92",
+      "name": "Create a draft in Gmail",
+      "webhookId": "29eeb188-ad9b-4e24-bf4a-660ada4c0144",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "yPYrb4l9A7M50AMm",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Gmail Trigger": [
+      {
+        "json": {
+          "id": "19c146082dc5fa6a",
+          "threadId": "19c146082dc5fa6a",
+          "labelIds": [
+            "IMPORTANT",
+            "CATEGORY_PERSONAL",
+            "INBOX"
+          ],
+          "sizeEstimate": 7233,
+          "headers": {
+            "delivered-to": "Delivered-To: madhusree.rana2017@gmail.com",
+            "received": "Received: from mail-sor-f41.google.com (mail-sor-f41.google.com. [209.85.220.41])\r\n        by mx.google.com with SMTPS id a92af1059eb24-124a7c9950esor3247679c88.13.2026.01.31.06.06.35\r\n        for <madhusree.rana2017@gmail.com>\r\n        (Google Transport Security);\r\n        Sat, 31 Jan 2026 06:06:35 -0800 (PST)",
+            "x-received": "X-Received: by 2002:a05:7022:6899:b0:123:3584:de40 with SMTP id\r\n a92af1059eb24-125c10769aamr2811438c88.50.1769868394401; Sat, 31 Jan 2026\r\n 06:06:34 -0800 (PST)",
+            "arc-seal": "ARC-Seal: i=1; a=rsa-sha256; t=1769868394; cv=none;\r\n        d=google.com; s=arc-20240605;\r\n        b=kx3rVKwJkqflk0qr1aBJzW+7refx+qvPYHj6UsoCHTMokQ0/Nk87B2cpjMWIFBvNx+\r\n         MmMM4TIJMGUQaJkBWanFvJHv44f259nffVitBcOBUeE7wF3uTCS8NP3s5ShMfmK/syFW\r\n         NpZ8nkhVKRcFthKnRU59uAsx5V93Efel0cj8gIkkN+8PD3z+JAKXT18Rfr9DyWuzox3s\r\n         TPHmLAuhqZkpvNvnUyrtibOZTBJ0N2M+C/pk7PHBCpoOEs9lNpPgU8nvY0WOvkEWIrHU\r\n         r4pQpk5cqCN3NTaT22gHj9cJmlrU59PB2kdRrvoGYyUVh17VipHqvJYHYl/YF8fIBhZY\r\n         1uMw==",
+            "arc-message-signature": "ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;\r\n        h=to:subject:message-id:date:from:mime-version:dkim-signature;\r\n        bh=e5uPlLwW2T35HDN0vPd1jQOy14o3KBrlsj2tAORayuI=;\r\n        fh=pnWgSVrjuoX6x8SPGQ8WPUWiQOcHusrFCD+JWFtpLKk=;\r\n        b=Djl1xR/AnT6RGGjozzkawai1njiYM6VQMl/p0O0kjLp5c7L8LVK82vR/vs4q+/8dGs\r\n         BtQwDw8BIG++Z7bteHjV/L7fob1dO2xfEcyRNbn+u17peG6zI/VopgvrQym4hAMn7kIe\r\n         fV0jzMuNOmgvo7JCX8fWZ/Ctg6qFtbq4kNjdgpeCcKKUpH1sqis7a+CWE5/CEi+5hbQE\r\n         hJU5e3Upnua5XyTL2+48VXRkV5ApFum0Etabg/BQwThA387yZNNi+chK9dFy7pkSjC0N\r\n         aTb1u4Bzns4nWw+b8tkG5Ybikl51DaOOsGqX6eiITFgl9yerg67RaeYgQgAOmoSyVzvd\r\n         GOTA==;\r\n        dara=google.com",
+            "arc-authentication-results": "ARC-Authentication-Results: i=1; mx.google.com; arc=none",
+            "return-path": "Return-Path: <madhurirana2023@gmail.com>",
+            "received-spf": "Received-SPF: pass (google.com: domain of madhurirana2023@gmail.com designates 209.85.220.41 as permitted sender) client-ip=209.85.220.41;",
+            "authentication-results": "Authentication-Results: mx.google.com;\r\n       dkim=pass header.i=@gmail.com header.s=20230601 header.b=gz+99lKY;\r\n       arc=pass (i=1);\r\n       spf=pass (google.com: domain of madhurirana2023@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=madhurirana2023@gmail.com;\r\n       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;\r\n       dara=pass header.i=@gmail.com",
+            "dkim-signature": "DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;\r\n        d=gmail.com; s=20230601; t=1769868394; x=1770473194; dara=google.com;\r\n        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject\r\n         :date:message-id:reply-to;\r\n        bh=e5uPlLwW2T35HDN0vPd1jQOy14o3KBrlsj2tAORayuI=;\r\n        b=gz+99lKYQ03Iq/3OZmX6xRbBV6urV9CfP0mLs3ef07uukPV5Yrf45ujm7k4aYeRVXp\r\n         keTGv9LPElFpbYwxbwFbDmHhQttkaznU1gHov/mKc/A4RQ3UJ/WAOMyUbnnfUsROx5M1\r\n         FUWwrq3Vo2LVEktW1tLM/6SNRzS312JoWGKqxq6WmP19MiDmHlpFqO0w0xuQyZ/AZwZx\r\n         MJG5npllxambiwzUueteCegDw4ADsGO5jYE9HrS4s50EW4aq5T0k5IsvhlmSWHQgJnqy\r\n         +SjeWtvprmg+yiWqOuwr4xpkhP67iMRm+tl/GNsF3jLk9bPubtJKBMSbHFLxNJAzgCQ2\r\n         7n5Q==",
+            "x-google-dkim-signature": "X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;\r\n        d=1e100.net; s=20230601; t=1769868394; x=1770473194;\r\n        h=to:subject:message-id:date:from:mime-version:x-gm-gg\r\n         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;\r\n        bh=e5uPlLwW2T35HDN0vPd1jQOy14o3KBrlsj2tAORayuI=;\r\n        b=dfeV/F+qSnc59xpI1C4iNkX9vhmO90OSqGoCgz2SPHJhsSyp0qPYIH+bGly9MPqwo2\r\n         72NYJOsjIvZU8Y4ZsYfTxyNkINoJkqqQJ0FuHKL1P9bUE1Iqu+3Crgdd9aJkPa8YkbsB\r\n         udCdaDqsynji7ouJc9lNUvZE/B/vyTUgJo2zpghBshWDtWQ/EGAW7GDrIJ0Q7yXfEWQu\r\n         vKzHd9jwTrfk1N3Nwm2HqD+i0LEejbHWNYgQaMWsIkmI2VOOXpLTyCCO5umx6v4jfXIT\r\n         ajoX+2IKLC3ez1TXM/80h+HAhH9gkswTJ3siySG0S55RJtB+RrnZWaotAsK0wlMlR3MU\r\n         qmhw==",
+            "x-gm-message-state": "X-Gm-Message-State: AOJu0YwDRXi8OVqgU7ALH9HqJf8oRY9hA3+HEfLt8M67c+ArCG/35bX+\r\n\tDh0KQkqx6s02Przw+elRJwO/eCLQBFtn2YFiDxqCFfiF5meawrOu8DR18vS4M1n+rBRyqTeDYiz\r\n\top1HOx8LY2ZzRBE7ZciY8P+HhGOzJSTc4IQ==",
+            "x-gm-gg": "X-Gm-Gg: AZuq6aJt0hziW4/wwfiHA2pXCMA9SUJ/HotERlwSs6RRglb4hBSJTvEWsUih62/awid\r\n\tpEqVp1C6bIpZ/lKuy+uRtqau048+pMJaCIpdFbSau3OMZMROb0oFEZdZMoxrsQyF5AgVpIWh2vi\r\n\tnZNqesjtBiY/tEr1wskaae9/2u3rYVgzIug7U8riMaAatI0tIGkTIpBUliWwmzLf+8zSbUvuXyU\r\n\tEcX0aA28bN82mop6oOlbdMP24vqgJhp6+Gmq1Rp8uoMrL9kjUShWqtTMJZvvLC5PXx+D5T//6ef\r\n\tf10ug/O3",
+            "mime-version": "MIME-Version: 1.0",
+            "from": "From: Madhuri Rana <madhurirana2023@gmail.com>",
+            "date": "Date: Sat, 31 Jan 2026 19:36:22 +0530",
+            "x-gm-features": "X-Gm-Features: AZwV_Qjm1mX2cq_iWdqxtNCCR704jipPYZOa-NxXBYNwml2fuPBuTd73h_68RnU",
+            "message-id": "Message-ID: <CAG4XHQc-Agk=-aBKOuevUDrUBWAESnncSq-HsW6TEbyY0jXZkg@mail.gmail.com>",
+            "subject": "Subject: Test mail",
+            "to": "To: Madhusree Rana <madhusree.rana2017@gmail.com>",
+            "content-type": "Content-Type: multipart/alternative; boundary=\"000000000000f295160649af98bd\""
+          },
+          "html": "<div dir=\"auto\">Hello Madhusree,<div dir=\"auto\"><br></div><div dir=\"auto\">How are you?</div><div dir=\"auto\"><br></div><div dir=\"auto\"><br></div><div dir=\"auto\">With love,</div><div dir=\"auto\">Maa</div></div>\n",
+          "text": "Hello Madhusree,\n\nHow are you?\n\n\nWith love,\nMaa\n",
+          "textAsHtml": "<p>Hello Madhusree,</p><p>How are you?</p><p>With love,<br/>Maa</p>",
+          "subject": "Test mail",
+          "date": "2026-01-31T14:06:22.000Z",
+          "to": {
+            "value": [
+              {
+                "address": "madhusree.rana2017@gmail.com",
+                "name": "Madhusree Rana"
+              }
+            ],
+            "html": "<span class=\"mp_address_group\"><span class=\"mp_address_name\">Madhusree Rana</span> &lt;<a href=\"mailto:madhusree.rana2017@gmail.com\" class=\"mp_address_email\">madhusree.rana2017@gmail.com</a>&gt;</span>",
+            "text": "\"Madhusree Rana\" <madhusree.rana2017@gmail.com>"
+          },
+          "from": {
+            "value": [
+              {
+                "address": "madhurirana2023@gmail.com",
+                "name": "Madhuri Rana"
+              }
+            ],
+            "html": "<span class=\"mp_address_group\"><span class=\"mp_address_name\">Madhuri Rana</span> &lt;<a href=\"mailto:madhurirana2023@gmail.com\" class=\"mp_address_email\">madhurirana2023@gmail.com</a>&gt;</span>",
+            "text": "\"Madhuri Rana\" <madhurirana2023@gmail.com>"
+          },
+          "messageId": "<CAG4XHQc-Agk=-aBKOuevUDrUBWAESnncSq-HsW6TEbyY0jXZkg@mail.gmail.com>"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a draft in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "401a4184-fa02-4b3d-a34a-0e321aed15f9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3d8b2cc6eda87ab7a55083550bc9a85efa5798fe4bcb79e64ab9897895fd9405"
+  },
+  "id": "r0qZ2x1oepw8XkqdNNTbq",
+  "tags": []
+}

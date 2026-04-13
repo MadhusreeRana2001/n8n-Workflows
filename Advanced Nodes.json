@@ -1,0 +1,120 @@
+{
+  "name": "Advanced Nodes",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        -16
+      ],
+      "id": "5382c319-5992-4121-9acf-bb890228ecfa",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "11eXBIyGcfaeZI0vSBpTS5XXR6ceC566TPs1Xggysjhw",
+          "mode": "list",
+          "cachedResultName": "n8n Practice",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11eXBIyGcfaeZI0vSBpTS5XXR6ceC566TPs1Xggysjhw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11eXBIyGcfaeZI0vSBpTS5XXR6ceC566TPs1Xggysjhw/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -80,
+        -16
+      ],
+      "id": "84785821-268b-440c-9bba-5b81fceb16e8",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YjzWKYIV9zxZ1tFb",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "total = 0\n\n# Loop over input items\nfor item in _items:\n  total += item[\"json\"][\"Age\"]\n  print(total)\n\nreturn {\n  \"total\": total\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        -128
+      ],
+      "id": "3dd79d72-fd41-46d9-976c-89ce8607c2ae",
+      "name": "Code in Python (Native)"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "language": "pythonNative",
+        "pythonCode": "# Add a new field called 'Info' to the JSON of the item\n_item[\"json\"][\"Info\"] = f\"{_item[\"json\"]['First Name']} {_item[\"json\"]['Last Name']} is {_item[\"json\"][\"Age\"]} years old\"\nreturn _item"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        64
+      ],
+      "id": "b326f6ef-b490-4c1f-b1d9-de3d4cabd528",
+      "name": "Code in Python (Native)1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in Python (Native)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code in Python (Native)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "7c0d4317-0c97-4993-9630-2b5b66b2db8f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3790798ecfd307521cfcb584008e8cbe1f2600f293814574fe2c7b6054c5be14"
+  },
+  "id": "uZCJ9kMhhdeCAePh",
+  "tags": []
+}

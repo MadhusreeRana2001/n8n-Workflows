@@ -1,0 +1,474 @@
+{
+  "name": "Google Sheets",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        -272
+      ],
+      "id": "84073454-ae71-4853-bdb2-f8f5c00180f0",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "11eXBIyGcfaeZI0vSBpTS5XXR6ceC566TPs1Xggysjhw",
+          "mode": "list",
+          "cachedResultName": "n8n Practice",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11eXBIyGcfaeZI0vSBpTS5XXR6ceC566TPs1Xggysjhw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11eXBIyGcfaeZI0vSBpTS5XXR6ceC566TPs1Xggysjhw/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -368,
+        -448
+      ],
+      "id": "8c1f538e-857e-4733-901d-60c0e7623424",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RYn0NkVmU0TXXWSM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a8f38c0c-7ced-4508-8c90-fcb893a5f148",
+              "leftValue": "={{ $json.Department }}",
+              "rightValue": "AI/ML",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -176,
+        -592
+      ],
+      "id": "ac054629-2c8e-4bc6-a68f-c5425b5fad82",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "81fd2d95-d074-429d-b92a-3375e23d3082",
+              "leftValue": "={{ $json['Highest Degree'] }}",
+              "rightValue": "MSc",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "c236bc75-0062-4ce5-95f3-6d86c4808ea4",
+              "leftValue": "={{ $json.Company }}",
+              "rightValue": "PATS",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        16,
+        -592
+      ],
+      "id": "0e77cd89-a2c3-4734-9a14-70bb306bc7b5",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b0a3ab5d-95fd-43f2-80e4-cca0361a4a14",
+              "name": "Info",
+              "value": "={{ $json['First Name'] }} {{ $json['Last Name'] }}, coming from {{ $json.City.toUpperCase() }}, is the Team Lead of the {{ $json.Department }} Department",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        -736
+      ],
+      "id": "c85dbcba-0587-4a2d-933e-a0f5a3baa8b3",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5e1ef6fe-94ed-4fe4-9463-9efc28c91134",
+              "name": "Info",
+              "value": "={{ $json['First Name'] }} {{ $json['Last Name'] }}, coming from {{ $json.City.toUpperCase() }}, works in the {{ $json.Department }} department.",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        -448
+      ],
+      "id": "212bc8a5-33e9-4a83-8ee2-62d928917838",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "Major Project"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        384,
+        -448
+      ],
+      "id": "ce9df28c-62ff-487d-ae87-274ecf5492ab",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b68b98c2-9f3f-40a0-83d0-d397d3cc5091",
+              "leftValue": "={{ $json['Major Project'] }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "array",
+                "operation": "lengthGt",
+                "rightType": "number"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        560,
+        -448
+      ],
+      "id": "81ceb947-3776-4eda-92b8-7f4132422f42",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d80d42a0-2f79-4f8f-8740-5a3d817c5652",
+              "name": "Project Info",
+              "value": "=The department is dealing with multiple projects",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        768,
+        -528
+      ],
+      "id": "1d59feff-b952-4582-aa67-d5f5b676715c",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "errorMessage": "The department is having no project"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        768,
+        -352
+      ],
+      "id": "b9f6ac15-4ea4-4b36-88ff-5013b92bd21d",
+      "name": "Stop and Error"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1P4Rdp1wDPVx2IqVv9CqLgbCIBLnwRvYx_ob_ixVb6DU",
+          "mode": "list",
+          "cachedResultName": "n8n Practice 2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1P4Rdp1wDPVx2IqVv9CqLgbCIBLnwRvYx_ob_ixVb6DU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1P4Rdp1wDPVx2IqVv9CqLgbCIBLnwRvYx_ob_ixVb6DU/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -368,
+        -96
+      ],
+      "id": "6033b6c7-134f-4b67-bac6-da4a74c6e44d",
+      "name": "Get row(s) in sheet1",
+      "executeOnce": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RYn0NkVmU0TXXWSM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "['First Name']",
+        "joinMode": "enrichInput1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -176,
+        -272
+      ],
+      "id": "f45f1c84-ee18-49a8-af86-0ca36e9b81b5",
+      "name": "Merge1 (Combine)"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        384,
+        -720
+      ],
+      "id": "cea440fb-8a3c-45f2-ba3d-8d87bc65e594",
+      "name": "Merge (Append)"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1 (Combine)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge (Append)",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge (Append)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        []
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Merge1 (Combine)",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timeSavedMode": "fixed",
+    "timezone": "Asia/Kolkata",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "8bd28e9c-fc4a-4693-91ba-c296e0072140",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f5bca2dad4050467b310b3a97ce85eaf628be2080f0abb985c754eefa765169d"
+  },
+  "id": "qOSGRQ0oNITx32Tp",
+  "tags": []
+}

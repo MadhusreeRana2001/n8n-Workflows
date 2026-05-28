@@ -1,0 +1,225 @@
+{
+  "name": "Summarize Form Feedback",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        0
+      ],
+      "id": "a52c874a-78b3-48c7-afd4-142a688d7ee5",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1E7MWg5icXFyT8qvns5AHHrVqY_9SFRmUnKH4dBnEIzY",
+          "mode": "list",
+          "cachedResultName": "n8n Sample Feedback Collection",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1E7MWg5icXFyT8qvns5AHHrVqY_9SFRmUnKH4dBnEIzY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1E7MWg5icXFyT8qvns5AHHrVqY_9SFRmUnKH4dBnEIzY/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        160,
+        0
+      ],
+      "id": "74475c03-906d-4cdf-8a6d-af8970c84f5e",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "MumHYhsJs478pVUK",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "What went great?"
+            },
+            {
+              "fieldToAggregate": "How can we improve?"
+            },
+            {
+              "fieldToAggregate": "What is the chance of recommending our service?"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        320,
+        0
+      ],
+      "id": "a2e0d913-6dd4-4fc9-898e-4379028057f0",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.1-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.1-flash-lite"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "|| ROLE ||\nYou are an expert at analyzing and summarizing feedback forms.\n\n|| GOAL ||\nYour task is to summarize event feedback form responses.\n\n|| CONTEXT ||\nYou will receive answers to 3 questions:\n- What went great?\n- How can we improve?\n- What is the chance of recommending our service?\n\nEach question has several answers separated by a comma (,) character.\n\nAnalyze the answers to each question of the feedback form and prepare a summary report. It should contain an overall sentiment regarding the event, followed by constructive ideas on what to improve.\n\n|| RULE ||\nReply in markdown format.",
+              "role": "model"
+            },
+            {
+              "content": "=- What went great?\n```{{ $json['What went great?'] }}```\n\n- How can we improve?\n```{{ $json['How can we improve?'] }}```\n\n- What is the chance of recommending our service?\n```{{ $json['What is the chance of recommending our service?'] }}```"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        480,
+        0
+      ],
+      "id": "f6d9bcda-3271-44bd-9f88-5f7101e788f3",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "jCvjkNM7rhQN58bb",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "={{ $json.content.parts[0].text }}",
+        "options": {
+          "completeHTMLDocument": false
+        }
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        752,
+        0
+      ],
+      "id": "d30897da-c578-45f1-8271-18b16a65f5f9",
+      "name": "Markdown"
+    },
+    {
+      "parameters": {
+        "sendTo": "madhusree.rana2017@gmail.com",
+        "subject": "Feedback Form Summary",
+        "message": "={{ $json.data }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        896,
+        0
+      ],
+      "id": "0cbf3f83-fdfe-406a-b22a-a5ae253efe09",
+      "name": "Send a message",
+      "webhookId": "2a8f48b1-821f-451b-ac14-947e7e221167",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5XySBD5Hi7ooQF5E",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "783a1b28-4413-4c49-b5a7-b95f201380df",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "922d4cd947e5189a5f97be20a0cfc06263e7a0f243930240239a366281b1c17b"
+  },
+  "id": "PpLrirmO8z5ngxQI",
+  "tags": []
+}

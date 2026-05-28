@@ -63,6 +63,16 @@ This repository contains a set of practical n8n workflows demonstrating automati
 
 ---
 
+### 6. Summarize Form Feedback
+
+* Trigger: Manual
+* Evaluates and summarizes form submissions collected in a Google Sheet
+* Uses Google Gemini model to generate the response in markdown
+* Converts the markdown to html
+* Sends the summary in html format to a specific Gmail address
+
+---
+
 ## Requirements
 
 * n8n (self-hosted or cloud)
@@ -91,13 +101,13 @@ This repository contains a set of practical n8n workflows demonstrating automati
 
 ---
 
-## Notes
-
-* Ensure all credentials are properly configured before running workflows
-* Modify sheet names and field mappings
-* AI outputs may vary depending on prompt and model behavior
+> **Note:**
+>
+>* Ensure all credentials are properly configured before running workflows
+>* Modify sheet names and field mappings
+>* AI outputs may vary depending on prompt and model behavior
 
 ---
 
-- *Version: 1.0*
-- *Last updated: April 2026*
+- *Last updated: May 2026*
+- *Version: 1.1*
